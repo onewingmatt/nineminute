@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-fullscreen">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>The 9-Minute Foundation</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="icon" type="image/png" href="/static/icon-192.png">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
+    <meta name="theme-color" content="#1a73e8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            overflow-y: auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1em;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        
+        .timer-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .timer-display {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 20px 0;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .exercise-name {
+            font-size: 1.8em;
+            margin: 15px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .exercise-type {
+            font-size: 1.1em;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #4caf50;
+            transition: width 0.3s;
+            border-radius: 4px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: #fff;
+            color: #667eea;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .start-button {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.3em;
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+        }
+        
+        .stats-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            opacity: 0.8;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .completed-badge {
+            background: #4caf50;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .rest-phase {
+            background: rgba(255, 152, 0, 0.3);
+        }
+        
+        .work-phase {
+            background: rgba(76, 175, 80, 0.3);
+        }
+        
+        .stretch-phase {
+            background: rgba(33, 150, 243, 0.3);
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            .timer-display {
+                font-size: 3em;
+            }
+            
+            .exercise-name {
+                font-size: 1.3em;
+            }
+            
+            button {
+                padding: 12px 24px;
+                font-size: 1em;
+            }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>The 9-Minute Foundation</h1>
+        <p class="subtitle">7-minute workout + 2-minute stretch</p>
+        
+        <div id="startScreen" class="timer-container">
+            <h2>Ready to start?</h2>
+            <p style="margin: 20px 0;">
+                • 12 exercises (30s work / 10s rest)<br>
+                • 4 stretches (30s each)<br>
+                • Total: 9 minutes
+            </p>
+            <button class="start-button" onclick="startWorkout()">Start Workout</button>
+        </div>
+        
+        <div id="workoutScreen" class="timer-container hidden">
+            <div class="exercise-type" id="exerciseType">WORK</div>
+            <div class="exercise-name" id="exerciseName">Jumping Jacks</div>
+            <div class="timer-display" id="timerDisplay">00:30</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="controls">
+                <button onclick="pauseWorkout()" id="pauseBtn">Pause</button>
+                <button onclick="stopWorkout()">Stop</button>
+            </div>
+        </div>
+        
+        <div id="completeScreen" class="timer-container hidden">
+            <h2>🎉 Workout Complete!</h2>
+            <p style="margin: 20px 0; font-size: 1.2em;">
+                Great job! You've completed your 9-minute foundation workout.
+            </p>
+            <button class="start-button" onclick="resetWorkout()">Start Another</button>
+        </div>
+        
+        <div class="stats-container">
+            <h3 style="margin-bottom: 15px;">Your Progress</h3>
+            <div class="stat-item">
+                <span class="stat-label">Today</span>
+                <span class="stat-value" id="todayStatus">-</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Total Workouts</span>
+                <span class="stat-value" id="totalWorkouts">-</span>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/app.js"></script>
+    <script>
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/sw.js')
+                .then(reg => console.log('Service Worker registered'))
+                .catch(err => console.log('Service Worker registration failed:', err));
+        }
+    </script>
+</body>
+</html>
