@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from sqlalchemy import create_engine, Column, Integer, String, Date, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -20,7 +20,7 @@ class WorkoutCompletion(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     completion_date = Column(Date, nullable=False, index=True)
-    completed_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    completed_at = Column(DateTime, nullable=False)
     workout_type = Column(String, default="full")  # full, workout-only, stretch-only
 
 # Create tables
@@ -62,7 +62,7 @@ async def complete_workout(completion: CompletionRequest):
         if not existing:
             new_completion = WorkoutCompletion(
                 completion_date=today,
-                completed_at=datetime.utcnow(),
+                completed_at=datetime.now(timezone.utc),
                 workout_type=completion.workout_type
             )
             db.add(new_completion)

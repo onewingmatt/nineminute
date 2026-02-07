@@ -42,6 +42,7 @@ let timeRemaining = 0;
 let timerInterval = null;
 let isPaused = false;
 let workoutStartTime = null;
+let audioContext = null;
 
 // UI Elements
 const startScreen = document.getElementById('startScreen');
@@ -205,7 +206,9 @@ async function loadStats() {
 function playBeep() {
     // Simple beep using Web Audio API
     try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
         
