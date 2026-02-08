@@ -26,15 +26,58 @@ const workoutExercises = [
     { name: "Rest", duration: 10, type: "rest" }
 ];
 
-const stretchExercises = [
-    { name: "Lower Back Stretch", duration: 30, type: "stretch" },
-    { name: "Plantar Fasciitis Stretch", duration: 30, type: "stretch" },
-    { name: "IT Band Stretch", duration: 30, type: "stretch" },
-    { name: "Upper Back Stretch", duration: 30, type: "stretch" }
-];
+// Stretch categories: each category has 4 variants (one per day in rotation)
+const stretchCategories = {
+    "Lower Back Stretch": [
+        "Lower Back Stretch - Variation A",
+        "Lower Back Stretch - Variation B",
+        "Lower Back Stretch - Variation C",
+        "Lower Back Stretch - Variation D"
+    ],
+    "Plantar Fasciitis Stretch": [
+        "Plantar Fasciitis Stretch - Variation A",
+        "Plantar Fasciitis Stretch - Variation B",
+        "Plantar Fasciitis Stretch - Variation C",
+        "Plantar Fasciitis Stretch - Variation D"
+    ],
+    "IT Band Stretch": [
+        "IT Band Stretch - Variation A",
+        "IT Band Stretch - Variation B",
+        "IT Band Stretch - Variation C",
+        "IT Band Stretch - Variation D"
+    ],
+    "Upper Back Stretch": [
+        "Upper Back Stretch - Variation A",
+        "Upper Back Stretch - Variation B",
+        "Upper Back Stretch - Variation C",
+        "Upper Back Stretch - Variation D"
+    ]
+};
 
-// Combine all exercises
-const allExercises = [...workoutExercises, ...stretchExercises];
+// Combined exercises will be built at runtime so stretches rotate daily
+let allExercises = [];
+
+function getRotationIndex() {
+    // rotate by day using UTC day number to avoid timezone surprises
+    const dayNumber = Math.floor(Date.now() / 86400000);
+    return dayNumber % 4; // 0..3
+}
+
+function buildStretchExercisesForToday() {
+    const rot = getRotationIndex();
+    const arr = [];
+    for (const category of Object.keys(stretchCategories)) {
+        const variants = stretchCategories[category];
+        const name = variants[rot % variants.length];
+        arr.push({ name, duration: 30, type: 'stretch' });
+    }
+    return arr;
+}
+
+function buildAllExercises() {
+    const stretches = buildStretchExercisesForToday();
+    allExercises = [...workoutExercises, ...stretches];
+}
 
 // State
 let currentExerciseIndex = 0;
@@ -82,6 +125,7 @@ function buildVisibleIndexes() {
 }
 
 // Initialize
+buildAllExercises();
 buildVisibleIndexes();
 
 // Initialize calendar state from localStorage
@@ -98,7 +142,8 @@ function startWorkout() {
     completeScreen.classList.add('hidden');
     workoutScreen.classList.remove('hidden');
     
-    // initialize timeline controls
+    // initialize today's exercises and timeline controls
+    buildAllExercises();
     buildVisibleIndexes();
     if (timelineRange) {
         timelineRange.max = Math.max(0, visibleIndexes.length - 1);
