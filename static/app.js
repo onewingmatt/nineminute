@@ -200,14 +200,22 @@ function updateDisplay() {
         exerciseInstructionEl.textContent = exercise.instruction || '';
     }
     if (exerciseIllustrationEl) {
-        if (exercise.img) {
-            exerciseIllustrationEl.href = exercise.img;
-            exerciseIllustrationEl.classList.remove('hidden');
-        } else {
-            exerciseIllustrationEl.classList.add('hidden');
-        }
+        // show provided image or generate a simple SVG placeholder data URI
+        const src = exercise.img && exercise.img.length ? exercise.img : generatePlaceholderDataUri(exercise.name);
+        exerciseIllustrationEl.src = src;
+        exerciseIllustrationEl.classList.remove('hidden');
     }
     
+
+function generatePlaceholderDataUri(text) {
+    const label = text.split(' ').slice(0,3).map(w => w[0]).join('').toUpperCase();
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200'><rect width='100%' height='100%' fill='%236677ee'/><text x='50%' y='50%' font-size='28' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='Arial, Helvetica, sans-serif'>${escapeHtml(label)}</text></svg>`;
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+function escapeHtml(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
     // Update exercise type
     if (exercise.type === 'work') {
         exerciseType.textContent = 'WORK';
