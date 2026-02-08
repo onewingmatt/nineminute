@@ -214,6 +214,21 @@
             }
         }
         
+        /* Calendar collapse/expand animation */
+        .calendar-collapsed {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 320ms ease, opacity 220ms ease;
+        }
+
+        .calendar-expanded {
+            max-height: 1000px; /* large enough to show content */
+            opacity: 1;
+            overflow: hidden;
+            transition: max-height 320ms ease, opacity 220ms ease;
+        }
+
         .hidden {
             display: none;
         }
@@ -284,7 +299,7 @@
                         <button onclick="calendarNextMonth()" id="calNext">▶</button>
                     </div>
                 </div>
-                <div id="calendarWrapper" class="hidden">
+                <div id="calendarWrapper" class="calendar-collapsed">
                     <div id="calendarContainer" style="background: rgba(255,255,255,0.05); padding:12px; border-radius:8px;"></div>
                 </div>
             </div>

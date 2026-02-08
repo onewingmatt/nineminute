@@ -63,6 +63,7 @@ const totalWorkouts = document.getElementById('totalWorkouts');
 const calendarContainer = document.getElementById('calendarContainer');
 const calendarWrapper = document.getElementById('calendarWrapper');
 const calendarToggleBtn = document.getElementById('calendarToggle');
+const CAL_KEY = 'calendarOpen';
 
 // Calendar state
 let calendarYear = (new Date()).getFullYear();
@@ -82,6 +83,10 @@ function buildVisibleIndexes() {
 
 // Initialize
 buildVisibleIndexes();
+
+// Initialize calendar state from localStorage
+initCalendarState();
+
 loadStats();
 
 function startWorkout() {
@@ -418,11 +423,36 @@ function renderCalendar(year, month) {
 
 function toggleCalendar() {
     if (!calendarWrapper || !calendarToggleBtn) return;
-    const hidden = calendarWrapper.classList.toggle('hidden');
-    calendarToggleBtn.textContent = hidden ? 'Show' : 'Hide';
-    if (!hidden) {
-        // ensure calendar is up to date when expanding
+    const isCollapsed = calendarWrapper.classList.contains('calendar-collapsed');
+    if (isCollapsed) {
+        calendarWrapper.classList.remove('calendar-collapsed');
+        calendarWrapper.classList.add('calendar-expanded');
+        calendarToggleBtn.textContent = 'Hide';
+        localStorage.setItem(CAL_KEY, 'true');
         renderCalendar(calendarYear, calendarMonth);
+    } else {
+        calendarWrapper.classList.remove('calendar-expanded');
+        calendarWrapper.classList.add('calendar-collapsed');
+        calendarToggleBtn.textContent = 'Show';
+        localStorage.setItem(CAL_KEY, 'false');
+    }
+}
+
+function initCalendarState() {
+    try {
+        if (!calendarWrapper || !calendarToggleBtn) return;
+        const open = localStorage.getItem(CAL_KEY) === 'true';
+        if (open) {
+            calendarWrapper.classList.remove('calendar-collapsed');
+            calendarWrapper.classList.add('calendar-expanded');
+            calendarToggleBtn.textContent = 'Hide';
+        } else {
+            calendarWrapper.classList.remove('calendar-expanded');
+            calendarWrapper.classList.add('calendar-collapsed');
+            calendarToggleBtn.textContent = 'Show';
+        }
+    } catch (e) {
+        // ignore localStorage errors
     }
 }
 
