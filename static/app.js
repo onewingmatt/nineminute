@@ -29,28 +29,28 @@ const workoutExercises = [
 // Stretch categories: each category has 4 variants (one per day in rotation)
 const stretchCategories = {
     "Lower Back Stretch": [
-        "Knee-to-Chest Stretch",
-        "Child's Pose (Balasana)",
-        "Seated Forward Fold",
-        "Supine Spinal Twist"
+        { name: "Knee-to-Chest Stretch", instruction: "Lie on your back and pull one knee to your chest, hold 30s.", img: "" },
+        { name: "Child's Pose (Balasana)", instruction: "Sit back on heels, reach arms forward and rest forehead; breathe deeply 30s.", img: "" },
+        { name: "Seated Forward Fold", instruction: "Sit with legs extended and hinge forward from hips; hold 30s.", img: "" },
+        { name: "Supine Spinal Twist", instruction: "Lie on back, drop knees to one side while looking opposite; hold 30s each side.", img: "" }
     ],
     "Plantar Fasciitis Stretch": [
-        "Calf Stretch (Straight Knee)",
-        "Calf Stretch (Bent Knee)",
-        "Seated Towel Stretch",
-        "Toe Pull / Plantar Fascia Stretch"
+        { name: "Calf Stretch (Straight Knee)", instruction: "Stand and lean into a wall keeping back leg straight; hold 30s.", img: "" },
+        { name: "Calf Stretch (Bent Knee)", instruction: "Lean into a wall with back knee slightly bent to target soleus; hold 30s.", img: "" },
+        { name: "Seated Towel Stretch", instruction: "Sit and loop a towel over toes; pull toward you to stretch plantar fascia; hold 30s.", img: "" },
+        { name: "Toe Pull / Plantar Fascia Stretch", instruction: "Pull toes back toward shin to stretch the arch; hold 30s.", img: "" }
     ],
     "IT Band Stretch": [
-        "Standing Cross-Leg IT Band Stretch",
-        "Supine IT Band Stretch with Strap",
-        "Figure-4 Glute/IT Stretch (Lying)",
-        "Side-Lying IT Band Release Stretch"
+        { name: "Standing Cross-Leg IT Band Stretch", instruction: "Cross one leg behind and lean away from that side; hold 30s.", img: "" },
+        { name: "Supine IT Band Stretch with Strap", instruction: "Lie on back, loop strap over foot and pull across body; hold 30s.", img: "" },
+        { name: "Figure-4 Glute/IT Stretch (Lying)", instruction: "Lie, cross ankle over opposite knee and pull leg toward chest; hold 30s.", img: "" },
+        { name: "Side-Lying IT Band Release Stretch", instruction: "Lie on side and stretch top leg back and down gently; hold 30s.", img: "" }
     ],
     "Upper Back Stretch": [
-        "Cat-Cow (Upper Back Focus)",
-        "Thread the Needle",
-        "Eagle Arms Stretch (Upper Back)",
-        "Standing Chest Opener / Upper Back Stretch"
+        { name: "Cat-Cow (Upper Back Focus)", instruction: "On hands/knees, round and arch spine slowly, focus on upper back mobility; 30s.", img: "" },
+        { name: "Thread the Needle", instruction: "From hands/knees, thread one arm under the body and rest shoulder; hold 30s each side.", img: "" },
+        { name: "Eagle Arms Stretch (Upper Back)", instruction: "Wrap arms and lift elbows to open upper back; hold 30s.", img: "" },
+        { name: "Standing Chest Opener / Upper Back Stretch", instruction: "Clasp hands behind and gently lift to open chest and upper back; hold 30s.", img: "" }
     ]
 };
 
@@ -68,8 +68,8 @@ function buildStretchExercisesForToday() {
     const arr = [];
     for (const category of Object.keys(stretchCategories)) {
         const variants = stretchCategories[category];
-        const name = variants[rot % variants.length];
-        arr.push({ name, duration: 30, type: 'stretch' });
+        const v = variants[rot % variants.length];
+        arr.push({ name: v.name, duration: 30, type: 'stretch', instruction: v.instruction || '', img: v.img || '' });
     }
     return arr;
 }
@@ -107,6 +107,8 @@ const calendarContainer = document.getElementById('calendarContainer');
 const calendarWrapper = document.getElementById('calendarWrapper');
 const calendarToggleBtn = document.getElementById('calendarToggle');
 const CAL_KEY = 'calendarOpen';
+const exerciseInstructionEl = document.getElementById('exerciseInstruction');
+const exerciseIllustrationEl = document.getElementById('exerciseIllustration');
 
 // Calendar state
 let calendarYear = (new Date()).getFullYear();
@@ -192,6 +194,19 @@ function updateDisplay() {
     
     // Update exercise name
     exerciseName.textContent = exercise.name;
+
+    // Update instruction and illustration link (if available)
+    if (exerciseInstructionEl) {
+        exerciseInstructionEl.textContent = exercise.instruction || '';
+    }
+    if (exerciseIllustrationEl) {
+        if (exercise.img) {
+            exerciseIllustrationEl.href = exercise.img;
+            exerciseIllustrationEl.classList.remove('hidden');
+        } else {
+            exerciseIllustrationEl.classList.add('hidden');
+        }
+    }
     
     // Update exercise type
     if (exercise.type === 'work') {
