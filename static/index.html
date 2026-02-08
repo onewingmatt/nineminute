@@ -242,8 +242,18 @@
                 <div class="progress-fill" id="progressFill" style="width: 0%"></div>
             </div>
             <div class="controls">
+                <button onclick="prevExercise()" id="prevBtn">◀ Prev</button>
                 <button onclick="pauseWorkout()" id="pauseBtn">Pause</button>
+                <button onclick="nextExercise()" id="nextBtn">Next ▶</button>
                 <button onclick="stopWorkout()">Stop</button>
+            </div>
+
+            <div style="margin-top:18px; display:flex; flex-direction:column; gap:8px; align-items:center;">
+                <input type="range" id="timelineRange" min="0" value="0" style="width:100%">
+                <div style="display:flex; justify-content:space-between; width:100%; font-size:0.95em; opacity:0.9;">
+                    <span id="timelineLabel">Exercise 1 / 1</span>
+                    <span id="timelineName" style="max-width:60%; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; text-align:right;"></span>
+                </div>
             </div>
         </div>
         
@@ -264,6 +274,16 @@
             <div class="stat-item">
                 <span class="stat-label">Total Workouts</span>
                 <span class="stat-value" id="totalWorkouts">-</span>
+            </div>
+            <div style="margin-top:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <strong style="font-size:1em;">Calendar</strong>
+                    <div>
+                        <button onclick="calendarPrevMonth()" id="calPrev" style="margin-right:8px;">◀</button>
+                        <button onclick="calendarNextMonth()" id="calNext">▶</button>
+                    </div>
+                </div>
+                <div id="calendarContainer" style="background: rgba(255,255,255,0.05); padding:12px; border-radius:8px;"></div>
             </div>
         </div>
     </div>
