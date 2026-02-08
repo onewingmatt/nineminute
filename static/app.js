@@ -67,8 +67,19 @@ let calendarYear = (new Date()).getFullYear();
 let calendarMonth = (new Date()).getMonth(); // 0-based
 let completedDatesSet = new Set(); // strings like '2026-02-07'
 let recentCompletions = []; // array of {date, workout_type, completed_at}
+let visibleIndexes = []; // indices in allExercises excluding rests for the timeline
+
+function buildVisibleIndexes() {
+    visibleIndexes = [];
+    for (let i = 0; i < allExercises.length; i++) {
+        if (allExercises[i].type !== 'rest') {
+            visibleIndexes.push(i);
+        }
+    }
+}
 
 // Initialize
+buildVisibleIndexes();
 loadStats();
 
 function startWorkout() {
@@ -81,9 +92,11 @@ function startWorkout() {
     workoutScreen.classList.remove('hidden');
     
     // initialize timeline controls
+    buildVisibleIndexes();
     if (timelineRange) {
-        timelineRange.max = allExercises.length - 1;
-        timelineRange.value = currentExerciseIndex;
+        timelineRange.max = Math.max(0, visibleIndexes.length - 1);
+        // set timeline to first visible exercise
+        timelineRange.value = 0;
     }
     updateTimelineLabels();
 
@@ -150,9 +163,15 @@ function updateDisplay() {
     const exerciseProgress = (1 - timeRemaining / exercise.duration) / allExercises.length * 100;
     progressFill.style.width = `${totalProgress + exerciseProgress}%`;
     
-    // update timeline UI
+    // update timeline UI (map current exercise to visible index)
     if (timelineRange) {
-        timelineRange.value = currentExerciseIndex;
+        // find visible position for currentExerciseIndex
+        let pos = visibleIndexes.indexOf(currentExerciseIndex);
+        if (pos === -1) {
+            // if currently on a rest, show the nearest previous visible exercise
+            pos = visibleIndexes.reduce((acc, v, i) => (v <= currentExerciseIndex ? i : acc), 0);
+        }
+        timelineRange.value = pos;
     }
     updateTimelineLabels();
 }
@@ -192,14 +211,26 @@ function resetWorkout() {
 }
 
 function prevExercise() {
-    if (currentExerciseIndex > 0) {
-        goToExercise(currentExerciseIndex - 1);
+    // move to previous visible (non-rest) exercise
+    const pos = visibleIndexes.indexOf(currentExerciseIndex);
+    let targetPos = pos > -1 ? pos - 1 : visibleIndexes.reduce((acc, v, i) => (v < currentExerciseIndex ? i : acc), -1);
+    if (targetPos >= 0) {
+        goToExercise(visibleIndexes[targetPos]);
     }
 }
 
 function nextExercise() {
-    if (currentExerciseIndex < allExercises.length - 1) {
-        goToExercise(currentExerciseIndex + 1);
+    // move to next visible (non-rest) exercise
+    const pos = visibleIndexes.indexOf(currentExerciseIndex);
+    let targetPos = pos;
+    if (pos === -1) {
+        // if currently on rest, find first visible after current
+        targetPos = visibleIndexes.findIndex(v => v > currentExerciseIndex);
+    } else {
+        targetPos = pos + 1;
+    }
+    if (targetPos >= 0 && targetPos < visibleIndexes.length) {
+        goToExercise(visibleIndexes[targetPos]);
     } else {
         // finish
         goToExercise(allExercises.length);
@@ -244,24 +275,33 @@ function goToExercise(index) {
 // wire range control
 if (timelineRange) {
     timelineRange.addEventListener('input', (e) => {
-        const idx = Number(e.target.value);
+        const visiblePos = Number(e.target.value);
         // show preview but don't change running state until user releases
-        timelineLabel.textContent = `Exercise ${idx + 1} / ${allExercises.length}`;
-        timelineName.textContent = allExercises[idx].name;
+        const totalVisible = Math.max(1, visibleIndexes.length);
+        const actualIndex = visibleIndexes[visiblePos] ?? visibleIndexes[Math.min(visiblePos, visibleIndexes.length-1)];
+        timelineLabel.textContent = `Exercise ${visiblePos + 1} / ${totalVisible}`;
+        if (actualIndex !== undefined) timelineName.textContent = allExercises[actualIndex].name;
     });
 
     timelineRange.addEventListener('change', (e) => {
-        const idx = Number(e.target.value);
-        goToExercise(idx);
+        const visiblePos = Number(e.target.value);
+        const actualIndex = visibleIndexes[visiblePos];
+        if (actualIndex !== undefined) goToExercise(actualIndex);
     });
 }
 
 function updateTimelineLabels() {
     if (!timelineLabel) return;
-    const total = allExercises.length;
-    const idx = Math.min(Math.max(0, currentExerciseIndex), total - 1);
-    timelineLabel.textContent = `Exercise ${idx + 1} / ${total}`;
-    timelineName.textContent = allExercises[idx].name;
+    const totalVisible = Math.max(1, visibleIndexes.length);
+    // determine visible position
+    let pos = visibleIndexes.indexOf(currentExerciseIndex);
+    if (pos === -1) {
+        // if on rest, pick nearest previous visible
+        pos = visibleIndexes.reduce((acc, v, i) => (v <= currentExerciseIndex ? i : acc), 0);
+    }
+    timelineLabel.textContent = `Exercise ${pos + 1} / ${totalVisible}`;
+    const actualIndex = visibleIndexes[pos] ?? visibleIndexes[0];
+    timelineName.textContent = allExercises[actualIndex].name;
 }
 
 async function saveCompletion() {
