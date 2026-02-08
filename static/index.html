@@ -279,11 +279,14 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                     <strong style="font-size:1em;">Calendar</strong>
                     <div>
+                        <button id="calendarToggle" onclick="toggleCalendar()" style="margin-right:10px;">Show</button>
                         <button onclick="calendarPrevMonth()" id="calPrev" style="margin-right:8px;">◀</button>
                         <button onclick="calendarNextMonth()" id="calNext">▶</button>
                     </div>
                 </div>
-                <div id="calendarContainer" style="background: rgba(255,255,255,0.05); padding:12px; border-radius:8px;"></div>
+                <div id="calendarWrapper" class="hidden">
+                    <div id="calendarContainer" style="background: rgba(255,255,255,0.05); padding:12px; border-radius:8px;"></div>
+                </div>
             </div>
         </div>
     </div>

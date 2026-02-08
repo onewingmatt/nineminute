@@ -61,6 +61,8 @@ const timelineName = document.getElementById('timelineName');
 const todayStatus = document.getElementById('todayStatus');
 const totalWorkouts = document.getElementById('totalWorkouts');
 const calendarContainer = document.getElementById('calendarContainer');
+const calendarWrapper = document.getElementById('calendarWrapper');
+const calendarToggleBtn = document.getElementById('calendarToggle');
 
 // Calendar state
 let calendarYear = (new Date()).getFullYear();
@@ -412,6 +414,16 @@ function renderCalendar(year, month) {
     }
 
     calendarContainer.appendChild(grid);
+}
+
+function toggleCalendar() {
+    if (!calendarWrapper || !calendarToggleBtn) return;
+    const hidden = calendarWrapper.classList.toggle('hidden');
+    calendarToggleBtn.textContent = hidden ? 'Show' : 'Hide';
+    if (!hidden) {
+        // ensure calendar is up to date when expanding
+        renderCalendar(calendarYear, calendarMonth);
+    }
 }
 
 function onCalendarDayClick(dateStr, completed) {
