@@ -29,28 +29,28 @@ const workoutExercises = [
 // Stretch categories: each category has 4 variants (one per day in rotation)
 const stretchCategories = {
     "Lower Back Stretch": [
-        "Lower Back Stretch - Variation A",
-        "Lower Back Stretch - Variation B",
-        "Lower Back Stretch - Variation C",
-        "Lower Back Stretch - Variation D"
+        "Knee-to-Chest Stretch",
+        "Child's Pose (Balasana)",
+        "Seated Forward Fold",
+        "Supine Spinal Twist"
     ],
     "Plantar Fasciitis Stretch": [
-        "Plantar Fasciitis Stretch - Variation A",
-        "Plantar Fasciitis Stretch - Variation B",
-        "Plantar Fasciitis Stretch - Variation C",
-        "Plantar Fasciitis Stretch - Variation D"
+        "Calf Stretch (Straight Knee)",
+        "Calf Stretch (Bent Knee)",
+        "Seated Towel Stretch",
+        "Toe Pull / Plantar Fascia Stretch"
     ],
     "IT Band Stretch": [
-        "IT Band Stretch - Variation A",
-        "IT Band Stretch - Variation B",
-        "IT Band Stretch - Variation C",
-        "IT Band Stretch - Variation D"
+        "Standing Cross-Leg IT Band Stretch",
+        "Supine IT Band Stretch with Strap",
+        "Figure-4 Glute/IT Stretch (Lying)",
+        "Side-Lying IT Band Release Stretch"
     ],
     "Upper Back Stretch": [
-        "Upper Back Stretch - Variation A",
-        "Upper Back Stretch - Variation B",
-        "Upper Back Stretch - Variation C",
-        "Upper Back Stretch - Variation D"
+        "Cat-Cow (Upper Back Focus)",
+        "Thread the Needle",
+        "Eagle Arms Stretch (Upper Back)",
+        "Standing Chest Opener / Upper Back Stretch"
     ]
 };
 
