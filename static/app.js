@@ -1,56 +1,56 @@
 // Exercise definitions
 const workoutExercises = [
-    { name: "Jumping Jacks", duration: 30, type: "work", img: "https://upload.wikimedia.org/wikipedia/commons/e/e1/Elementary_school_students_conduct_jumping_jacks_to_warm_up_USMC-120214-M-MA421-288.jpg" },
+    { name: "Jumping Jacks", duration: 30, type: "work", instruction: "Jump with legs wide and arms overhead, then return." },
     { name: "Rest", duration: 10, type: "rest" },
-    { name: "Wall Sit", duration: 30, type: "work" },
+    { name: "Wall Sit", duration: 30, type: "work", instruction: "Lean against a wall with knees at 90 degrees." },
     { name: "Rest", duration: 10, type: "rest" },
-    { name: "Push-ups", duration: 30, type: "work" },
+    { name: "Push-ups", duration: 30, type: "work", instruction: "Lower and raise your body using your arms." },
     { name: "Rest", duration: 10, type: "rest" },
-    { name: "Abdominal Crunches", duration: 30, type: "work" },
+    { name: "Abdominal Crunches", duration: 30, type: "work", instruction: "Curl your torso toward your knees." },
     { name: "Rest", duration: 10, type: "rest" },
-    { name: "Step-up onto Chair", duration: 30, type: "work", img: "https://upload.wikimedia.org/wikipedia/commons/3/3d/Aerobic_exercise_-_public_demonstration07.jpg" },
+    { name: "Step-up onto Chair", duration: 30, type: "work", instruction: "Step up onto a stable chair or bench." },
     { name: "Rest", duration: 10, type: "rest" },
-    { name: "Squats", duration: 30, type: "work" },
+    { name: "Squats", duration: 30, type: "work", instruction: "Lower your hips from a standing position." },
     { name: "Rest", duration: 10, type: "rest" },
-    { name: "Triceps Dip on Chair", duration: 30, type: "work" },
+    { name: "Triceps Dip on Chair", duration: 30, type: "work", instruction: "Lower yourself using your arms on a chair edge." },
     { name: "Rest", duration: 10, type: "rest" },
-    { name: "Plank", duration: 30, type: "work" },
+    { name: "Plank", duration: 30, type: "work", instruction: "Hold a push-up position on your forearms." },
     { name: "Rest", duration: 10, type: "rest" },
-    { name: "High Knees Running in Place", duration: 30, type: "work", img: "https://upload.wikimedia.org/wikipedia/commons/f/f0/HIIT_Workout.jpg" },
+    { name: "High Knees Running in Place", duration: 30, type: "work", instruction: "Run in place, bringing knees up high." },
     { name: "Rest", duration: 10, type: "rest" },
-    { name: "Lunges", duration: 30, type: "work" },
+    { name: "Lunges", duration: 30, type: "work", instruction: "Step forward and lower your hips." },
     { name: "Rest", duration: 10, type: "rest" },
-    { name: "Push-up and Rotation", duration: 30, type: "work" },
+    { name: "Push-up and Rotation", duration: 30, type: "work", instruction: "Do a push-up, then rotate one arm to the ceiling." },
     { name: "Rest", duration: 10, type: "rest" },
-    { name: "Side Plank", duration: 30, type: "work" },
+    { name: "Side Plank", duration: 30, type: "work", instruction: "Hold your body sideways on one forearm." },
     { name: "Rest", duration: 10, type: "rest" }
 ];
 
 // Stretch categories: each category has 4 variants (one per day in rotation)
 const stretchCategories = {
     "Lower Back Stretch": [
-        { name: "Knee-to-Chest Stretch", instruction: "Lie on your back and pull one knee to your chest, hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/5/55/Waist_Rotating_Pose.jpg" },
-        { name: "Child's Pose (Balasana)", instruction: "Sit back on heels, reach arms forward and rest forehead; breathe deeply 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/0/0b/Balasana.JPG" },
-        { name: "Seated Forward Fold", instruction: "Sit with legs extended and hinge forward from hips; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/6/66/Paschimotanasana_Yoga-Asana_Nina-Mel.jpg" },
-        { name: "Supine Spinal Twist", instruction: "Lie on back, drop knees to one side while looking opposite; hold 30s each side.", img: "https://upload.wikimedia.org/wikipedia/commons/5/55/Waist_Rotating_Pose.jpg" }
+        { name: "Knee-to-Chest Stretch", instruction: "Lie on your back and pull one knee to your chest, hold 30s." },
+        { name: "Child's Pose (Balasana)", instruction: "Sit back on heels, reach arms forward and rest forehead; breathe deeply 30s." },
+        { name: "Seated Forward Fold", instruction: "Sit with legs extended and hinge forward from hips; hold 30s." },
+        { name: "Supine Spinal Twist", instruction: "Lie on back, drop knees to one side while looking opposite; hold 30s each side." }
     ],
     "Plantar Fasciitis Stretch": [
-        { name: "Calf Stretch (Straight Knee)", instruction: "Stand and lean into a wall keeping back leg straight; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/3/37/Calf_stretch_right_leg.jpg" },
-        { name: "Calf Stretch (Bent Knee)", instruction: "Lean into a wall with back knee slightly bent to target soleus; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/3/37/Calf_stretch_right_leg.jpg" },
-        { name: "Seated Towel Stretch", instruction: "Sit and loop a towel over toes; pull toward you to stretch plantar fascia; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/5/56/Foot_on_white_background.jpg" },
-        { name: "Toe Pull / Plantar Fascia Stretch", instruction: "Pull toes back toward shin to stretch the arch; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/b/ba/PF-PainAreas.jpg" }
+        { name: "Calf Stretch (Straight Knee)", instruction: "Stand and lean into a wall keeping back leg straight; hold 30s." },
+        { name: "Calf Stretch (Bent Knee)", instruction: "Lean into a wall with back knee slightly bent to target soleus; hold 30s." },
+        { name: "Seated Towel Stretch", instruction: "Sit and loop a towel over toes; pull toward you to stretch plantar fascia; hold 30s." },
+        { name: "Toe Pull / Plantar Fascia Stretch", instruction: "Pull toes back toward shin to stretch the arch; hold 30s." }
     ],
     "IT Band Stretch": [
-        { name: "Standing Cross-Leg IT Band Stretch", instruction: "Cross one leg behind and lean away from that side; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/4/49/Standing_Lunge.jpg" },
-        { name: "Supine IT Band Stretch with Strap", instruction: "Lie on back, loop strap over foot and pull across body; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Asanas_Composite.jpg" },
-        { name: "Figure-4 Glute/IT Stretch (Lying)", instruction: "Lie, cross ankle over opposite knee and pull leg toward chest; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Asanas_Composite.jpg" },
-        { name: "Side-Lying IT Band Release Stretch", instruction: "Lie on side and stretch top leg back and down gently; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Asanas_Composite.jpg" }
+        { name: "Standing Cross-Leg IT Band Stretch", instruction: "Cross one leg behind and lean away from that side; hold 30s." },
+        { name: "Supine IT Band Stretch with Strap", instruction: "Lie on back, loop strap over foot and pull across body; hold 30s." },
+        { name: "Figure-4 Glute/IT Stretch (Lying)", instruction: "Lie, cross ankle over opposite knee and pull leg toward chest; hold 30s." },
+        { name: "Side-Lying IT Band Release Stretch", instruction: "Lie on side and stretch top leg back and down gently; hold 30s." }
     ],
     "Upper Back Stretch": [
-        { name: "Cat-Cow (Upper Back Focus)", instruction: "On hands/knees, round and arch spine slowly, focus on upper back mobility; 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/2/26/Cow_cat_pose.jpg" },
-        { name: "Thread the Needle", instruction: "From hands/knees, thread one arm under the body and rest shoulder; hold 30s each side.", img: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Asanas_Composite.jpg" },
-        { name: "Eagle Arms Stretch (Upper Back)", instruction: "Wrap arms and lift elbows to open upper back; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/1/1c/Garudasana_in_park.jpg" },
-        { name: "Standing Chest Opener / Upper Back Stretch", instruction: "Clasp hands behind and gently lift to open chest and upper back; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Kapotasana_YogaAsana_Nina-Mel.jpg" }
+        { name: "Cat-Cow (Upper Back Focus)", instruction: "On hands/knees, round and arch spine slowly, focus on upper back mobility; 30s." },
+        { name: "Thread the Needle", instruction: "From hands/knees, thread one arm under the body and rest shoulder; hold 30s each side." },
+        { name: "Eagle Arms Stretch (Upper Back)", instruction: "Wrap arms and lift elbows to open upper back; hold 30s." },
+        { name: "Standing Chest Opener / Upper Back Stretch", instruction: "Clasp hands behind and gently lift to open chest and upper back; hold 30s." }
     ]
 };
 
@@ -69,7 +69,7 @@ function buildStretchExercisesForToday() {
     for (const category of Object.keys(stretchCategories)) {
         const variants = stretchCategories[category];
         const v = variants[rot % variants.length];
-        arr.push({ name: v.name, duration: 30, type: 'stretch', instruction: v.instruction || '', img: v.img || '' });
+        arr.push({ name: v.name, duration: 30, type: 'stretch', instruction: v.instruction || '' });
     }
     return arr;
 }
@@ -108,7 +108,6 @@ const calendarWrapper = document.getElementById('calendarWrapper');
 const calendarToggleBtn = document.getElementById('calendarToggle');
 const CAL_KEY = 'calendarOpen';
 const exerciseInstructionEl = document.getElementById('exerciseInstruction');
-const exerciseIllustrationEl = document.getElementById('exerciseIllustration');
 const exerciseDetailsEl = document.getElementById('exerciseDetails');
 const exerciseDetailsSummary = document.getElementById('exerciseDetailsSummary');
 
@@ -191,6 +190,13 @@ function startExercise() {
     }, 1000);
 }
 
+// Toggle summary text when details are opened/closed
+if (exerciseDetailsEl && exerciseDetailsSummary) {
+    exerciseDetailsEl.addEventListener('toggle', () => {
+        exerciseDetailsSummary.textContent = exerciseDetailsEl.open ? 'Hide details' : 'Show details';
+    });
+}
+
 function updateDisplay() {
     const exercise = allExercises[currentExerciseIndex];
     
@@ -203,27 +209,15 @@ function updateDisplay() {
     }
     // Use expandable details for instructions; hide image UI entirely
     if (exerciseDetailsEl) {
-        try { exerciseDetailsEl.open = false; } catch (e) { /* ignore */ }
-        if (exerciseDetailsSummary) exerciseDetailsSummary.textContent = 'Show details';
+        if (exercise.instruction) {
+            exerciseDetailsEl.classList.remove('hidden');
+            try { exerciseDetailsEl.open = false; } catch (e) { /* ignore */ }
+            if (exerciseDetailsSummary) exerciseDetailsSummary.textContent = 'Show details';
+        } else {
+            exerciseDetailsEl.classList.add('hidden');
+        }
     }
-    
 
-function generatePlaceholderDataUri(text) {
-    const label = text.split(' ').slice(0,3).map(w => w[0]).join('').toUpperCase();
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200'><rect width='100%' height='100%' fill='%236677ee'/><text x='50%' y='50%' font-size='28' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='Arial, Helvetica, sans-serif'>${escapeHtml(label)}</text></svg>`;
-    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-}
-
-// Toggle summary text when details are opened/closed
-if (exerciseDetailsEl && exerciseDetailsSummary) {
-    exerciseDetailsEl.addEventListener('toggle', () => {
-        exerciseDetailsSummary.textContent = exerciseDetailsEl.open ? 'Hide details' : 'Show details';
-    });
-}
-
-function escapeHtml(s){
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
     // Update exercise type
     if (exercise.type === 'work') {
         exerciseType.textContent = 'WORK';
