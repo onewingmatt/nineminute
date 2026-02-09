@@ -252,8 +252,10 @@
         <div id="workoutScreen" class="timer-container hidden">
             <div class="exercise-type" id="exerciseType">WORK</div>
             <div class="exercise-name" id="exerciseName">Jumping Jacks</div>
-            <div id="exerciseInstruction" style="font-size:0.95em; opacity:0.95; margin-top:8px; min-height:36px;">Follow the prompt.</div>
-            <img id="exerciseIllustration" class="hidden" alt="illustration" style="display:block; margin:10px auto 0; max-width:140px; border-radius:6px;" />
+            <details id="exerciseDetails" style="margin-top:8px; min-height:36px;">
+                <summary id="exerciseDetailsSummary" style="font-size:0.95em; opacity:0.95; cursor:pointer;">Show details</summary>
+                <div id="exerciseInstruction" style="font-size:0.95em; opacity:0.95; margin-top:8px;">Follow the prompt.</div>
+            </details>
             <div class="timer-display" id="timerDisplay">00:30</div>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill" style="width: 0%"></div>

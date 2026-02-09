@@ -109,6 +109,8 @@ const calendarToggleBtn = document.getElementById('calendarToggle');
 const CAL_KEY = 'calendarOpen';
 const exerciseInstructionEl = document.getElementById('exerciseInstruction');
 const exerciseIllustrationEl = document.getElementById('exerciseIllustration');
+const exerciseDetailsEl = document.getElementById('exerciseDetails');
+const exerciseDetailsSummary = document.getElementById('exerciseDetailsSummary');
 
 // Calendar state
 let calendarYear = (new Date()).getFullYear();
@@ -199,11 +201,10 @@ function updateDisplay() {
     if (exerciseInstructionEl) {
         exerciseInstructionEl.textContent = exercise.instruction || '';
     }
-    if (exerciseIllustrationEl) {
-        // show provided image or generate a simple SVG placeholder data URI
-        const src = exercise.img && exercise.img.length ? exercise.img : generatePlaceholderDataUri(exercise.name);
-        exerciseIllustrationEl.src = src;
-        exerciseIllustrationEl.classList.remove('hidden');
+    // Use expandable details for instructions; hide image UI entirely
+    if (exerciseDetailsEl) {
+        try { exerciseDetailsEl.open = false; } catch (e) { /* ignore */ }
+        if (exerciseDetailsSummary) exerciseDetailsSummary.textContent = 'Show details';
     }
     
 
@@ -211,6 +212,13 @@ function generatePlaceholderDataUri(text) {
     const label = text.split(' ').slice(0,3).map(w => w[0]).join('').toUpperCase();
     const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200'><rect width='100%' height='100%' fill='%236677ee'/><text x='50%' y='50%' font-size='28' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='Arial, Helvetica, sans-serif'>${escapeHtml(label)}</text></svg>`;
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+// Toggle summary text when details are opened/closed
+if (exerciseDetailsEl && exerciseDetailsSummary) {
+    exerciseDetailsEl.addEventListener('toggle', () => {
+        exerciseDetailsSummary.textContent = exerciseDetailsEl.open ? 'Hide details' : 'Show details';
+    });
 }
 
 function escapeHtml(s){
