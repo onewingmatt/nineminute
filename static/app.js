@@ -29,28 +29,28 @@ const workoutExercises = [
 // Stretch categories: each category has 4 variants (one per day in rotation)
 const stretchCategories = {
     "Lower Back Stretch": [
-        { name: "Knee-to-Chest Stretch", instruction: "Lie on your back and pull one knee to your chest, hold 30s.", img: "" },
-        { name: "Child's Pose (Balasana)", instruction: "Sit back on heels, reach arms forward and rest forehead; breathe deeply 30s.", img: "" },
-        { name: "Seated Forward Fold", instruction: "Sit with legs extended and hinge forward from hips; hold 30s.", img: "" },
-        { name: "Supine Spinal Twist", instruction: "Lie on back, drop knees to one side while looking opposite; hold 30s each side.", img: "" }
+        { name: "Knee-to-Chest Stretch", instruction: "Lie on your back and pull one knee to your chest, hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/5/55/Waist_Rotating_Pose.jpg" },
+        { name: "Child's Pose (Balasana)", instruction: "Sit back on heels, reach arms forward and rest forehead; breathe deeply 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/0/0b/Balasana.JPG" },
+        { name: "Seated Forward Fold", instruction: "Sit with legs extended and hinge forward from hips; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/6/66/Paschimotanasana_Yoga-Asana_Nina-Mel.jpg" },
+        { name: "Supine Spinal Twist", instruction: "Lie on back, drop knees to one side while looking opposite; hold 30s each side.", img: "https://upload.wikimedia.org/wikipedia/commons/5/55/Waist_Rotating_Pose.jpg" }
     ],
     "Plantar Fasciitis Stretch": [
-        { name: "Calf Stretch (Straight Knee)", instruction: "Stand and lean into a wall keeping back leg straight; hold 30s.", img: "" },
-        { name: "Calf Stretch (Bent Knee)", instruction: "Lean into a wall with back knee slightly bent to target soleus; hold 30s.", img: "" },
-        { name: "Seated Towel Stretch", instruction: "Sit and loop a towel over toes; pull toward you to stretch plantar fascia; hold 30s.", img: "" },
-        { name: "Toe Pull / Plantar Fascia Stretch", instruction: "Pull toes back toward shin to stretch the arch; hold 30s.", img: "" }
+        { name: "Calf Stretch (Straight Knee)", instruction: "Stand and lean into a wall keeping back leg straight; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/3/37/Calf_stretch_right_leg.jpg" },
+        { name: "Calf Stretch (Bent Knee)", instruction: "Lean into a wall with back knee slightly bent to target soleus; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/3/37/Calf_stretch_right_leg.jpg" },
+        { name: "Seated Towel Stretch", instruction: "Sit and loop a towel over toes; pull toward you to stretch plantar fascia; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/5/56/Foot_on_white_background.jpg" },
+        { name: "Toe Pull / Plantar Fascia Stretch", instruction: "Pull toes back toward shin to stretch the arch; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/b/ba/PF-PainAreas.jpg" }
     ],
     "IT Band Stretch": [
-        { name: "Standing Cross-Leg IT Band Stretch", instruction: "Cross one leg behind and lean away from that side; hold 30s.", img: "" },
-        { name: "Supine IT Band Stretch with Strap", instruction: "Lie on back, loop strap over foot and pull across body; hold 30s.", img: "" },
-        { name: "Figure-4 Glute/IT Stretch (Lying)", instruction: "Lie, cross ankle over opposite knee and pull leg toward chest; hold 30s.", img: "" },
-        { name: "Side-Lying IT Band Release Stretch", instruction: "Lie on side and stretch top leg back and down gently; hold 30s.", img: "" }
+        { name: "Standing Cross-Leg IT Band Stretch", instruction: "Cross one leg behind and lean away from that side; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/4/49/Standing_Lunge.jpg" },
+        { name: "Supine IT Band Stretch with Strap", instruction: "Lie on back, loop strap over foot and pull across body; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Asanas_Composite.jpg" },
+        { name: "Figure-4 Glute/IT Stretch (Lying)", instruction: "Lie, cross ankle over opposite knee and pull leg toward chest; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Asanas_Composite.jpg" },
+        { name: "Side-Lying IT Band Release Stretch", instruction: "Lie on side and stretch top leg back and down gently; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Asanas_Composite.jpg" }
     ],
     "Upper Back Stretch": [
-        { name: "Cat-Cow (Upper Back Focus)", instruction: "On hands/knees, round and arch spine slowly, focus on upper back mobility; 30s.", img: "" },
-        { name: "Thread the Needle", instruction: "From hands/knees, thread one arm under the body and rest shoulder; hold 30s each side.", img: "" },
-        { name: "Eagle Arms Stretch (Upper Back)", instruction: "Wrap arms and lift elbows to open upper back; hold 30s.", img: "" },
-        { name: "Standing Chest Opener / Upper Back Stretch", instruction: "Clasp hands behind and gently lift to open chest and upper back; hold 30s.", img: "" }
+        { name: "Cat-Cow (Upper Back Focus)", instruction: "On hands/knees, round and arch spine slowly, focus on upper back mobility; 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/2/26/Cow_cat_pose.jpg" },
+        { name: "Thread the Needle", instruction: "From hands/knees, thread one arm under the body and rest shoulder; hold 30s each side.", img: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Asanas_Composite.jpg" },
+        { name: "Eagle Arms Stretch (Upper Back)", instruction: "Wrap arms and lift elbows to open upper back; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/1/1c/Garudasana_in_park.jpg" },
+        { name: "Standing Chest Opener / Upper Back Stretch", instruction: "Clasp hands behind and gently lift to open chest and upper back; hold 30s.", img: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Kapotasana_YogaAsana_Nina-Mel.jpg" }
     ]
 };
 
