@@ -211,8 +211,7 @@ function updateDisplay() {
     if (exerciseDetailsEl) {
         if (exercise.instruction) {
             exerciseDetailsEl.classList.remove('hidden');
-            try { exerciseDetailsEl.open = false; } catch (e) { /* ignore */ }
-            if (exerciseDetailsSummary) exerciseDetailsSummary.textContent = 'Show details';
+            // State is preserved (stays open if it was open)
         } else {
             exerciseDetailsEl.classList.add('hidden');
         }
