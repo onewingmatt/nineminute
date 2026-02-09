@@ -1,6 +1,6 @@
 // Exercise definitions
 const workoutExercises = [
-    { name: "Jumping Jacks", duration: 30, type: "work" },
+    { name: "Jumping Jacks", duration: 30, type: "work", img: "https://upload.wikimedia.org/wikipedia/commons/e/e1/Elementary_school_students_conduct_jumping_jacks_to_warm_up_USMC-120214-M-MA421-288.jpg" },
     { name: "Rest", duration: 10, type: "rest" },
     { name: "Wall Sit", duration: 30, type: "work" },
     { name: "Rest", duration: 10, type: "rest" },
@@ -8,7 +8,7 @@ const workoutExercises = [
     { name: "Rest", duration: 10, type: "rest" },
     { name: "Abdominal Crunches", duration: 30, type: "work" },
     { name: "Rest", duration: 10, type: "rest" },
-    { name: "Step-up onto Chair", duration: 30, type: "work" },
+    { name: "Step-up onto Chair", duration: 30, type: "work", img: "https://upload.wikimedia.org/wikipedia/commons/3/3d/Aerobic_exercise_-_public_demonstration07.jpg" },
     { name: "Rest", duration: 10, type: "rest" },
     { name: "Squats", duration: 30, type: "work" },
     { name: "Rest", duration: 10, type: "rest" },
@@ -16,7 +16,7 @@ const workoutExercises = [
     { name: "Rest", duration: 10, type: "rest" },
     { name: "Plank", duration: 30, type: "work" },
     { name: "Rest", duration: 10, type: "rest" },
-    { name: "High Knees Running in Place", duration: 30, type: "work" },
+    { name: "High Knees Running in Place", duration: 30, type: "work", img: "https://upload.wikimedia.org/wikipedia/commons/f/f0/HIIT_Workout.jpg" },
     { name: "Rest", duration: 10, type: "rest" },
     { name: "Lunges", duration: 30, type: "work" },
     { name: "Rest", duration: 10, type: "rest" },
