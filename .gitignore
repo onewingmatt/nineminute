@@ -13,3 +13,8 @@ build/
 venv/
 env/
 .DS_Store
+*.pid
+.env
+.vscode/
+.idea/
+*.log
