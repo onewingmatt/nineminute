@@ -30,7 +30,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-3. Open your browser to `http://localhost:8000`
+3. Open your browser to `http://localhost:9876`
 
 ## Installing on Mobile
 

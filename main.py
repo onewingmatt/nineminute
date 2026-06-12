@@ -4,6 +4,10 @@ from fastapi.responses import FileResponse
 from datetime import date, datetime, timezone
 from pydantic import BaseModel
 import os
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Database setup
 DATABASE_URL = "sqlite:///./workout.db"
@@ -65,6 +69,8 @@ class CompletionResponse(BaseModel):
 
 # FastAPI app
 app = FastAPI(title="The 9-Minute Foundation")
+
+# Basic HTTP auth removed — app now serves without authentication.
 
 # Mount static files
 if os.path.exists("static"):
@@ -183,4 +189,7 @@ async def get_stats():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    HOST = os.getenv("HOST", "0.0.0.0")
+    PORT = int(os.getenv("PORT", "9876"))
+    logger.info(f"Starting server on {HOST}:{PORT}")
+    uvicorn.run(app, host=HOST, port=PORT)
