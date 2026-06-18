@@ -7,9 +7,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-fullscreen">
     <meta name="mobile-web-app-capable" content="yes">
     <title>The 9-Minute Foundation</title>
-    <link rel="manifest" href="/static/manifest.json">
-    <link rel="icon" type="image/png" href="/static/icon-192.png">
-    <link rel="apple-touch-icon" href="/static/icon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <meta name="theme-color" content="#667eea">
     <style>
         * {
@@ -57,7 +57,7 @@
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 30px;
+            padding: 24px;
             margin-bottom: 20px;
             text-align: center;
         }
@@ -79,9 +79,15 @@
         }
         
         .exercise-type {
-            font-size: 1.1em;
-            opacity: 0.8;
-            margin-bottom: 15px;
+            display: inline-block;
+            font-size: 0.8em;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 4px 14px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.12);
+            margin-bottom: 12px;
         }
         
         .progress-bar {
@@ -107,39 +113,81 @@
             margin-top: 20px;
         }
         
+        /* --- Buttons --- */
         button {
-            padding: 15px 30px;
-            font-size: 1.1em;
+            padding: 10px 20px;
+            font-size: 0.95em;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.2s, box-shadow 0.2s;
-            background: #fff;
-            color: #667eea;
+            font-weight: 600;
+            transition: all 0.2s;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            backdrop-filter: blur(4px);
         }
-        
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.3);
         }
-        
         button:active {
-            transform: translateY(0);
+            transform: scale(0.96);
         }
-        
         button:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
             transform: none;
         }
-        
+
+        .ctrl-round {
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            font-size: 1.2em;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.12);
+        }
+        .ctrl-round:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .ctrl-primary {
+            min-width: 100px;
+            padding: 12px 28px;
+            font-size: 1em;
+            background: rgba(255,255,255,0.9);
+            color: #555;
+            font-weight: 700;
+        }
+        .ctrl-primary:hover {
+            background: #fff;
+        }
+
+        .ctrl-stop {
+            padding: 8px 14px;
+            font-size: 0.8em;
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            font-weight: 400;
+        }
+        .ctrl-stop:hover {
+            background: rgba(255,60,60,0.2);
+            color: #fff;
+        }
+
         .start-button {
             width: 100%;
-            padding: 20px;
-            font-size: 1.3em;
+            padding: 18px;
+            font-size: 1.2em;
+            font-weight: 700;
             background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
             color: white;
+            letter-spacing: 0.3px;
+        }
+        .start-button:hover {
+            background: linear-gradient(135deg, #5cbf60 0%, #55b059 100%);
         }
         
         .stats-container {
@@ -190,6 +238,10 @@
         .stretch-phase {
             background: rgba(33, 150, 243, 0.3);
         }
+
+        .warmup-phase {
+            background: rgba(0, 188, 212, 0.3);
+        }
         
         @media (max-width: 600px) {
             .container {
@@ -209,8 +261,17 @@
             }
             
             button {
-                padding: 12px 24px;
+                padding: 8px 16px;
+                font-size: 0.85em;
+            }
+            .ctrl-round {
+                width: 42px;
+                height: 42px;
                 font-size: 1em;
+            }
+            .ctrl-primary {
+                min-width: 80px;
+                padding: 10px 20px;
             }
         }
         
@@ -232,20 +293,117 @@
         .hidden {
             display: none;
         }
+
+        /* Fixed mute toggle top-right */
+        .mute-float {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            z-index: 100;
+            padding: 8px 12px;
+            font-size: 0.85em;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            backdrop-filter: blur(6px);
+            transition: background 0.2s;
+        }
+        .mute-float:hover {
+            background: rgba(255,255,255,0.35);
+        }
+
+        /* Phase summary blocks */
+        .phase-summary {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        .phase-block {
+            flex: 1;
+            padding: 10px 6px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .phase-warmup { background: rgba(0, 188, 212, 0.2); }
+        .phase-work { background: rgba(76, 175, 80, 0.2); }
+        .phase-stretch { background: rgba(33, 150, 243, 0.2); }
+        .phase-label {
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+        }
+        .phase-detail {
+            font-size: 0.65em;
+            opacity: 0.7;
+            display: block;
+            margin-top: 3px;
+        }
+        .phase-time {
+            font-size: 1em;
+            font-weight: 700;
+            display: block;
+            margin-top: 3px;
+        }
+        .phase-arrow {
+            font-size: 1em;
+            opacity: 0.35;
+            flex-shrink: 0;
+        }
+
+        /* Rest urgency pulse */
+        @keyframes pulse-urgent {
+            0%, 100% { opacity: 1; transform: scaleX(1); }
+            50% { opacity: 0.5; transform: scaleX(0.97); }
+        }
+        .progress-fill.rest-urgent {
+            animation: pulse-urgent 0.5s ease-in-out infinite;
+            background: #ff9800;
+        }
+
+        /* Completion pop animation */
+        @keyframes complete-pop {
+            0% { transform: scale(0.92); opacity: 0.4; }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-complete {
+            animation: complete-pop 0.5s ease-out;
+        }
     </style>
 </head>
 <body>
+    <button onclick="toggleMute()" id="muteFloatBtn" class="mute-float">♫ On</button>
     <div class="container">
         <h1>The 9-Minute Foundation</h1>
-        <p class="subtitle">7-minute workout + 2-minute stretch</p>
+        <p class="subtitle">Warm-up + 7-min workout + 2-min stretch</p>
         
         <div id="startScreen" class="timer-container">
             <h2>Ready to start?</h2>
-            <p style="margin: 20px 0;">
-                • 12 exercises (30s work / 10s rest)<br>
-                • 4 stretches (30s each)<br>
-                • Total: 9 minutes
-            </p>
+            <div class="phase-summary">
+                <div class="phase-block phase-warmup">
+                    <span class="phase-label">Warm-up</span>
+                    <span class="phase-detail">3 exercises</span>
+                    <span class="phase-time">45s</span>
+                </div>
+                <span class="phase-arrow">→</span>
+                <div class="phase-block phase-work">
+                    <span class="phase-label">Workout</span>
+                    <span class="phase-detail">12 exercises</span>
+                    <span class="phase-time">7:50</span>
+                </div>
+                <span class="phase-arrow">→</span>
+                <div class="phase-block phase-stretch">
+                    <span class="phase-label">Stretch</span>
+                    <span class="phase-detail">4 exercises</span>
+                    <span class="phase-time">2:00</span>
+                </div>
+            </div>
             <button class="start-button" onclick="startWorkout()">Start Workout</button>
         </div>
         
@@ -261,10 +419,10 @@
                 <div class="progress-fill" id="progressFill" style="width: 0%"></div>
             </div>
             <div class="controls">
-                <button onclick="prevExercise()" id="prevBtn">◀ Prev</button>
-                <button onclick="pauseWorkout()" id="pauseBtn">Pause</button>
-                <button onclick="nextExercise()" id="nextBtn">Next ▶</button>
-                <button onclick="stopWorkout()">Stop</button>
+                <button onclick="prevExercise()" id="prevBtn" class="ctrl-round" title="Previous">◀</button>
+                <button onclick="pauseWorkout()" id="pauseBtn" class="ctrl-primary">Pause</button>
+                <button onclick="nextExercise()" id="nextBtn" class="ctrl-round" title="Next">▶</button>
+                <button onclick="stopWorkout()" class="ctrl-stop">Stop</button>
             </div>
 
             <div style="margin-top:18px; display:flex; flex-direction:column; gap:8px; align-items:center;">
@@ -284,7 +442,7 @@
             <button class="start-button" onclick="resetWorkout()">Start Another</button>
         </div>
         
-        <div class="stats-container">
+        <div class="stats-container" id="statsPanel">
             <h3 style="margin-bottom: 15px;">Your Progress</h3>
             <div class="stat-item">
                 <span class="stat-label">Today</span>
@@ -310,11 +468,11 @@
         </div>
     </div>
     
-    <script src="/static/app.js"></script>
+    <script src="app.js"></script>
     <script>
         // Register service worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/static/sw.js')
+            navigator.serviceWorker.register('sw.js')
                 .then(reg => console.log('Service Worker registered'))
                 .catch(err => console.log('Service Worker registration failed:', err));
         }

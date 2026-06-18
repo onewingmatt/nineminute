@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nineminute-v1';
+const CACHE_NAME = 'nineminute-v2';
 const urlsToCache = [
   '/',
   '/static/index.html',

@@ -1,4 +1,11 @@
-// Exercise definitions
+// Warm-up exercises (15s each, no rests between them)
+const warmupExercises = [
+    { name: "Deep Breathing", duration: 15, type: "warmup", instruction: "Inhale deeply through nose for 4s, exhale through mouth for 4s." },
+    { name: "Neck Rolls", duration: 15, type: "warmup", instruction: "Slowly roll your neck in a circular motion, alternating directions." },
+    { name: "Arm Circles", duration: 15, type: "warmup", instruction: "Extend arms and make small circles forward, then reverse." },
+];
+
+// Main workout exercises
 const workoutExercises = [
     { name: "Jumping Jacks", duration: 30, type: "work", instruction: "Jump with legs wide and arms overhead, then return." },
     { name: "Rest", duration: 10, type: "rest" },
@@ -54,13 +61,12 @@ const stretchCategories = {
     ]
 };
 
-// Combined exercises will be built at runtime so stretches rotate daily
+// Combined exercises — built at runtime so stretches rotate daily
 let allExercises = [];
 
 function getRotationIndex() {
-    // rotate by day using UTC day number to avoid timezone surprises
     const dayNumber = Math.floor(Date.now() / 86400000);
-    return dayNumber % 4; // 0..3
+    return dayNumber % 4;
 }
 
 function buildStretchExercisesForToday() {
@@ -76,16 +82,19 @@ function buildStretchExercisesForToday() {
 
 function buildAllExercises() {
     const stretches = buildStretchExercisesForToday();
-    allExercises = [...workoutExercises, ...stretches];
+    allExercises = [...warmupExercises, ...workoutExercises, ...stretches];
 }
 
 // State
 let currentExerciseIndex = 0;
 let timeRemaining = 0;
-let timerInterval = null;
+let timerHandle = null;
 let isPaused = false;
 let workoutStartTime = null;
+let pausedDuration = 0;
+let pauseStartTime = null;
 let audioContext = null;
+let muted = localStorage.getItem('nineminuteMuted') === 'true';
 
 // UI Elements
 const startScreen = document.getElementById('startScreen');
@@ -106,6 +115,8 @@ const totalWorkouts = document.getElementById('totalWorkouts');
 const calendarContainer = document.getElementById('calendarContainer');
 const calendarWrapper = document.getElementById('calendarWrapper');
 const calendarToggleBtn = document.getElementById('calendarToggle');
+const muteFloatBtn = document.getElementById('muteFloatBtn');
+const statsPanel = document.getElementById('statsPanel');
 const CAL_KEY = 'calendarOpen';
 const exerciseInstructionEl = document.getElementById('exerciseInstruction');
 const exerciseDetailsEl = document.getElementById('exerciseDetails');
@@ -113,10 +124,10 @@ const exerciseDetailsSummary = document.getElementById('exerciseDetailsSummary')
 
 // Calendar state
 let calendarYear = (new Date()).getFullYear();
-let calendarMonth = (new Date()).getMonth(); // 0-based
-let completedDatesSet = new Set(); // strings like '2026-02-07'
-let recentCompletions = []; // array of {date, workout_type, completed_at}
-let visibleIndexes = []; // indices in allExercises excluding rests for the timeline
+let calendarMonth = (new Date()).getMonth();
+let completedDatesSet = new Set();
+let recentCompletions = [];
+let visibleIndexes = [];
 
 function buildVisibleIndexes() {
     visibleIndexes = [];
@@ -130,121 +141,313 @@ function buildVisibleIndexes() {
 // Initialize
 buildAllExercises();
 buildVisibleIndexes();
-
-// Initialize calendar state from localStorage
 initCalendarState();
-
 loadStats();
+updateMuteButton();
 
+// --- Keyboard shortcuts ---
+document.addEventListener('keydown', (e) => {
+    if (!workoutScreen || workoutScreen.classList.contains('hidden')) return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+    switch (e.key) {
+        case ' ':
+            e.preventDefault();
+            pauseWorkout();
+            break;
+        case 'ArrowLeft':
+            e.preventDefault();
+            prevExercise();
+            break;
+        case 'ArrowRight':
+            e.preventDefault();
+            nextExercise();
+            break;
+        case 'm':
+        case 'M':
+            toggleMute();
+            break;
+    }
+});
+
+// --- Mute toggle ---
+function toggleMute() {
+    muted = !muted;
+    localStorage.setItem('nineminuteMuted', muted);
+    updateMuteButton();
+}
+
+function updateMuteButton() {
+    if (!muteFloatBtn) return;
+    if (muted) {
+        muteFloatBtn.textContent = '✕ Off';
+        muteFloatBtn.style.background = 'rgba(200,60,60,0.35)';
+        muteFloatBtn.style.opacity = '0.7';
+    } else {
+        muteFloatBtn.textContent = '♫ On';
+        muteFloatBtn.style.background = 'rgba(255,255,255,0.2)';
+        muteFloatBtn.style.opacity = '1';
+    }
+}
+
+function hideStats() {
+    if (statsPanel) statsPanel.style.display = 'none';
+}
+
+function showStats() {
+    if (statsPanel) statsPanel.style.display = '';
+}
+
+// --- Voice synthesis ---
+function speak(text) {
+    if (muted) return;
+    try {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.88;
+            utterance.pitch = 1.0;
+            utterance.volume = 0.8;
+            window.speechSynthesis.speak(utterance);
+        }
+    } catch (e) {
+        // Speech synthesis unavailable
+    }
+}
+
+function speakExerciseName(name) {
+    // Skip "Rest" — we'll say "Next: ..." instead
+    if (name === "Rest") return;
+    speak(name);
+}
+
+function speakNextUp(name) {
+    speak("Next: " + name);
+}
+
+function speakWorkoutComplete() {
+    speak("Great job! Workout complete.");
+}
+
+// --- Audio tones (Web Audio) ---
+function ensureAudioContext() {
+    try {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+    } catch (e) {
+        // Audio not available
+    }
+}
+
+function playTone(frequency, duration, type, volume) {
+    if (muted) return;
+    try {
+        ensureAudioContext();
+        if (!audioContext) return;
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.frequency.value = frequency;
+        oscillator.type = type || 'sine';
+        gainNode.gain.setValueAtTime(volume || 0.25, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+    } catch (e) {
+        // Audio unavailable
+    }
+}
+
+function playTransitionSound(type) {
+    switch (type) {
+        case 'warmup':
+            playTone(660, 0.15, 'sine', 0.2);
+            break;
+        case 'work':
+            playTone(440, 0.08, 'sine', 0.25);
+            setTimeout(() => playTone(660, 0.08, 'sine', 0.25), 80);
+            setTimeout(() => playTone(880, 0.12, 'sine', 0.25), 160);
+            break;
+        case 'rest':
+            playTone(330, 0.15, 'triangle', 0.2);
+            break;
+        case 'stretch':
+            playTone(528, 0.2, 'sine', 0.2);
+            break;
+        default:
+            playTone(600, 0.1, 'sine', 0.2);
+    }
+}
+
+function playCountdownBeep() {
+    playTone(880, 0.06, 'sine', 0.15);
+}
+
+function playCompleteSound() {
+    playTone(523, 0.15, 'sine', 0.3);
+    setTimeout(() => playTone(659, 0.15, 'sine', 0.3), 150);
+    setTimeout(() => playTone(784, 0.3, 'sine', 0.3), 300);
+}
+
+// --- Workout timer (wall-clock based, no drift) ---
 function startWorkout() {
     currentExerciseIndex = 0;
     isPaused = false;
     workoutStartTime = Date.now();
-    
+
     startScreen.classList.add('hidden');
     completeScreen.classList.add('hidden');
     workoutScreen.classList.remove('hidden');
-    
-    // initialize today's exercises and timeline controls
+    hideStats();
+
     buildAllExercises();
     buildVisibleIndexes();
     if (timelineRange) {
         timelineRange.max = Math.max(0, visibleIndexes.length - 1);
-        // set timeline to first visible exercise
         timelineRange.value = 0;
     }
     updateTimelineLabels();
 
-    startExercise();
+    beginExercise();
 }
 
-function startExercise() {
+function beginExercise() {
     if (currentExerciseIndex >= allExercises.length) {
         completeWorkout();
         return;
     }
-    
+
     const exercise = allExercises[currentExerciseIndex];
     timeRemaining = exercise.duration;
-    
+
     updateDisplay();
-    
-    // Play beep sound (if available)
-    playBeep();
-    
-    if (timerInterval) {
-        clearInterval(timerInterval);
+    playTransitionSound(exercise.type);
+
+    // Voice: announce the exercise (skip rest announcements here — handled in previous tick)
+    if (exercise.type !== 'rest') {
+        speakExerciseName(exercise.name);
     }
-    
-    timerInterval = setInterval(() => {
-        if (!isPaused) {
-            timeRemaining--;
-            updateDisplay();
-            
-            if (timeRemaining <= 0) {
-                clearInterval(timerInterval);
-                currentExerciseIndex++;
-                startExercise();
-            }
-        }
-    }, 1000);
+
+    // Start wall-clock-based timer
+    scheduleTick();
 }
 
-// Toggle summary text when details are opened/closed
-if (exerciseDetailsEl && exerciseDetailsSummary) {
-    exerciseDetailsEl.addEventListener('toggle', () => {
-        exerciseDetailsSummary.textContent = exerciseDetailsEl.open ? 'Hide details' : 'Show details';
-    });
+function scheduleTick() {
+    if (timerHandle) {
+        clearTimeout(timerHandle);
+    }
+
+    const exercise = allExercises[currentExerciseIndex];
+    const phaseStartTime = Date.now();
+    const phaseDuration = exercise.duration * 1000;
+    // Reset paused duration for this phase
+    pausedDuration = 0;
+
+    function tick() {
+        if (isPaused) {
+            // Resume from where we paused — reschedule to check again
+            timerHandle = setTimeout(tick, 100);
+            return;
+        }
+
+        const elapsed = Date.now() - phaseStartTime - pausedDuration;
+        timeRemaining = Math.max(0, Math.round((phaseDuration - elapsed) / 1000));
+        updateDisplay();
+
+        if (elapsed >= phaseDuration) {
+            // This phase is done — move to next
+            timerHandle = null;
+            currentExerciseIndex++;
+
+            // If the next exercise is rest, announce the work exercise after it
+            if (currentExerciseIndex < allExercises.length) {
+                const next = allExercises[currentExerciseIndex];
+                if (next.type === 'rest') {
+                    // Look ahead to what comes after rest
+                    const afterRest = currentExerciseIndex + 1;
+                    if (afterRest < allExercises.length) {
+                        const upcoming = allExercises[afterRest];
+                        if (upcoming.type !== 'rest') {
+                            setTimeout(() => speakNextUp(upcoming.name), 300);
+                        }
+                    }
+                }
+            }
+
+            beginExercise();
+            return;
+        }
+
+        // Countdown beeps in last 3 seconds
+        if (timeRemaining <= 3 && timeRemaining > 0) {
+            playCountdownBeep();
+        }
+
+        timerHandle = setTimeout(tick, 200);
+    }
+
+    tick();
 }
 
 function updateDisplay() {
     const exercise = allExercises[currentExerciseIndex];
-    
-    // Update exercise name
+
     exerciseName.textContent = exercise.name;
 
-    // Update instruction and illustration link (if available)
+    // Instruction details
     if (exerciseInstructionEl) {
         exerciseInstructionEl.textContent = exercise.instruction || '';
     }
-    // Use expandable details for instructions; hide image UI entirely
     if (exerciseDetailsEl) {
         if (exercise.instruction) {
             exerciseDetailsEl.classList.remove('hidden');
-            // State is preserved (stays open if it was open)
         } else {
             exerciseDetailsEl.classList.add('hidden');
         }
     }
 
-    // Update exercise type
-    if (exercise.type === 'work') {
+    // Phase type label and color
+    const type = exercise.type;
+    if (type === 'warmup') {
+        exerciseType.textContent = 'WARMUP';
+        workoutScreen.className = 'timer-container warmup-phase';
+    } else if (type === 'work') {
         exerciseType.textContent = 'WORK';
         workoutScreen.className = 'timer-container work-phase';
-    } else if (exercise.type === 'rest') {
+    } else if (type === 'rest') {
         exerciseType.textContent = 'REST';
         workoutScreen.className = 'timer-container rest-phase';
-    } else if (exercise.type === 'stretch') {
+    } else if (type === 'stretch') {
         exerciseType.textContent = 'STRETCH';
         workoutScreen.className = 'timer-container stretch-phase';
     }
-    
-    // Update timer
+
+    // Timer display
     const minutes = Math.floor(timeRemaining / 60);
     const seconds = timeRemaining % 60;
     timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    
-    // Update progress
+
+    // Progress bar
     const totalProgress = currentExerciseIndex / allExercises.length * 100;
     const exerciseProgress = (1 - timeRemaining / exercise.duration) / allExercises.length * 100;
     progressFill.style.width = `${totalProgress + exerciseProgress}%`;
-    
-    // update timeline UI (map current exercise to visible index)
+
+    // Rest urgency: pulse progress bar in last 3s of rest
+    if (type === 'rest' && timeRemaining <= 3 && timeRemaining > 0) {
+        progressFill.classList.add('rest-urgent');
+    } else {
+        progressFill.classList.remove('rest-urgent');
+    }
+
+    // Timeline
     if (timelineRange) {
-        // find visible position for currentExerciseIndex
         let pos = visibleIndexes.indexOf(currentExerciseIndex);
         if (pos === -1) {
-            // if currently on a rest, show the nearest previous visible exercise
             pos = visibleIndexes.reduce((acc, v, i) => (v <= currentExerciseIndex ? i : acc), 0);
         }
         timelineRange.value = pos;
@@ -255,39 +458,59 @@ function updateDisplay() {
 function pauseWorkout() {
     isPaused = !isPaused;
     pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
+
+    if (isPaused) {
+        pauseStartTime = Date.now();
+    } else if (pauseStartTime !== null) {
+        pausedDuration += Date.now() - pauseStartTime;
+        pauseStartTime = null;
+    }
 }
 
 function stopWorkout() {
-    if (timerInterval) {
-        clearInterval(timerInterval);
+    if (timerHandle) {
+        clearTimeout(timerHandle);
+        timerHandle = null;
     }
-    
+    window.speechSynthesis.cancel();
+
     workoutScreen.classList.add('hidden');
     startScreen.classList.remove('hidden');
-    
+    showStats();
+
     currentExerciseIndex = 0;
     isPaused = false;
+    pausedDuration = 0;
+    pauseStartTime = null;
 }
 
 function completeWorkout() {
-    if (timerInterval) {
-        clearInterval(timerInterval);
+    if (timerHandle) {
+        clearTimeout(timerHandle);
+        timerHandle = null;
     }
-    
+
     workoutScreen.classList.add('hidden');
     completeScreen.classList.remove('hidden');
-    
-    // Save completion to backend
+    completeScreen.classList.add('animate-complete');
+
+    pausedDuration = 0;
+    pauseStartTime = null;
+
+    playCompleteSound();
+    speakWorkoutComplete();
+
     saveCompletion();
 }
 
 function resetWorkout() {
     completeScreen.classList.add('hidden');
+    completeScreen.classList.remove('animate-complete');
     startScreen.classList.remove('hidden');
+    showStats();
 }
 
 function prevExercise() {
-    // move to previous visible (non-rest) exercise
     const pos = visibleIndexes.indexOf(currentExerciseIndex);
     let targetPos = pos > -1 ? pos - 1 : visibleIndexes.reduce((acc, v, i) => (v < currentExerciseIndex ? i : acc), -1);
     if (targetPos >= 0) {
@@ -296,11 +519,9 @@ function prevExercise() {
 }
 
 function nextExercise() {
-    // move to next visible (non-rest) exercise
     const pos = visibleIndexes.indexOf(currentExerciseIndex);
     let targetPos = pos;
     if (pos === -1) {
-        // if currently on rest, find first visible after current
         targetPos = visibleIndexes.findIndex(v => v > currentExerciseIndex);
     } else {
         targetPos = pos + 1;
@@ -308,51 +529,27 @@ function nextExercise() {
     if (targetPos >= 0 && targetPos < visibleIndexes.length) {
         goToExercise(visibleIndexes[targetPos]);
     } else {
-        // finish
         goToExercise(allExercises.length);
     }
 }
 
 function goToExercise(index) {
-    // clamp
+    if (timerHandle) {
+        clearTimeout(timerHandle);
+        timerHandle = null;
+    }
+
     const clamped = Math.min(Math.max(0, index), allExercises.length - 1);
     currentExerciseIndex = clamped;
 
-    // reset timer for the selected exercise
-    timeRemaining = allExercises[currentExerciseIndex].duration;
-
-    // update UI immediately
-    updateDisplay();
-
-    // restart interval if workout is active
-    if (!startScreen.classList.contains('hidden') && !workoutScreen.classList.contains('hidden')) {
-        // nothing: workout not active
-        return;
-    }
-
-    if (timerInterval) {
-        clearInterval(timerInterval);
-    }
-
-    timerInterval = setInterval(() => {
-        if (!isPaused) {
-            timeRemaining--;
-            updateDisplay();
-
-            if (timeRemaining <= 0) {
-                clearInterval(timerInterval);
-                currentExerciseIndex++;
-                startExercise();
-            }
-        }
-    }, 1000);
+    // Reset and restart
+    beginExercise();
 }
 
-// wire range control
+// Wire range control
 if (timelineRange) {
     timelineRange.addEventListener('input', (e) => {
         const visiblePos = Number(e.target.value);
-        // show preview but don't change running state until user releases
         const totalVisible = Math.max(1, visibleIndexes.length);
         const actualIndex = visibleIndexes[visiblePos] ?? visibleIndexes[Math.min(visiblePos, visibleIndexes.length-1)];
         timelineLabel.textContent = `Exercise ${visiblePos + 1} / ${totalVisible}`;
@@ -369,15 +566,20 @@ if (timelineRange) {
 function updateTimelineLabels() {
     if (!timelineLabel) return;
     const totalVisible = Math.max(1, visibleIndexes.length);
-    // determine visible position
     let pos = visibleIndexes.indexOf(currentExerciseIndex);
     if (pos === -1) {
-        // if on rest, pick nearest previous visible
         pos = visibleIndexes.reduce((acc, v, i) => (v <= currentExerciseIndex ? i : acc), 0);
     }
     timelineLabel.textContent = `Exercise ${pos + 1} / ${totalVisible}`;
     const actualIndex = visibleIndexes[pos] ?? visibleIndexes[0];
     timelineName.textContent = allExercises[actualIndex].name;
+}
+
+// Toggle summary text when details are opened/closed
+if (exerciseDetailsEl && exerciseDetailsSummary) {
+    exerciseDetailsEl.addEventListener('toggle', () => {
+        exerciseDetailsSummary.textContent = exerciseDetailsEl.open ? 'Hide details' : 'Show details';
+    });
 }
 
 async function saveCompletion() {
@@ -391,7 +593,7 @@ async function saveCompletion() {
                 workout_type: 'full'
             })
         });
-        
+
         if (response.ok) {
             const data = await response.json();
             console.log('Workout saved:', data);
@@ -410,7 +612,6 @@ async function loadStats() {
             todayStatus.textContent = data.completed_today ? '✓ Completed' : 'Not yet';
             totalWorkouts.textContent = data.total_completions;
 
-            // populate recentCompletions and completedDatesSet from recent_completions if available
             recentCompletions = Array.isArray(data.recent_completions) ? data.recent_completions : [];
             completedDatesSet.clear();
             recentCompletions.forEach(c => completedDatesSet.add(c.date));
@@ -445,7 +646,6 @@ function renderCalendar(year, month) {
     grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
     grid.style.gap = '6px';
 
-    // Weekday labels
     const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     weekdays.forEach(w => {
         const el = document.createElement('div');
@@ -456,7 +656,6 @@ function renderCalendar(year, month) {
         grid.appendChild(el);
     });
 
-    // padding blanks
     const firstDay = start.getDay();
     for (let i=0;i<firstDay;i++) {
         const empty = document.createElement('div');
@@ -526,7 +725,6 @@ function initCalendarState() {
 }
 
 function onCalendarDayClick(dateStr, completed) {
-    // Show per-day details using recentCompletions if available
     const entries = recentCompletions.filter(e => e.date === dateStr);
     if (entries.length > 0) {
         renderDayDetails(dateStr, entries);
@@ -542,7 +740,6 @@ function onCalendarDayClick(dateStr, completed) {
 }
 
 function renderDayDetails(dateStr, entries) {
-    // remove existing details if present
     const existing = document.getElementById('dayDetails');
     if (existing) existing.remove();
 
@@ -597,30 +794,4 @@ function calendarNextMonth() {
     calendarMonth += 1;
     if (calendarMonth > 11) { calendarMonth = 0; calendarYear += 1; }
     renderCalendar(calendarYear, calendarMonth);
-}
-
-function playBeep() {
-    // Simple beep using Web Audio API
-    try {
-        if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.value = 800;
-        oscillator.type = 'sine';
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.1);
-    } catch (error) {
-        // Beep not available
-        console.log('Audio not available');
-    }
 }

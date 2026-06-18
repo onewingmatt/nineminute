@@ -1,0 +1,14 @@
+services:
+  nineminute:
+    build: .
+    ports:
+      - "9876:8000"
+    environment:
+      - PORT=8000
+      - DATABASE_URL=sqlite:///data/workout.db
+    volumes:
+      - workout_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  workout_data:
